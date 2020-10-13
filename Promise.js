@@ -6,7 +6,7 @@ const STATUS = {
 
 class MPromise {
   _status = STATUS.PENDING;
-  _result = null;
+  #result = null;
 
   resolvedCb() { }
   rejectedCb() { }
