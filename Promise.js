@@ -5,7 +5,7 @@ const STATUS = {
 }
 
 class MPromise {
-  _status = STATUS.PENDING;
+  #status = STATUS.PENDING;
   #result = null;
 
   resolvedCb() { }
@@ -15,17 +15,16 @@ class MPromise {
   thenRj() { }
 
   _resolve(res) {
-    this._status = STATUS.RESOLVED;
+    this.#status = STATUS.RESOLVED;
     this.thenedResult = this.resolvedCb(res);
   }
 
   _reject(err) {
-    this._status = STATUS.REJECTED;
+    this.#status = STATUS.REJECTED;
     this.rejectedCb(err);
   }
 
   set thenedResult(value) {
-    console.log('#thenedResult setter', value);
     this.thenRs(value)
   }
 
