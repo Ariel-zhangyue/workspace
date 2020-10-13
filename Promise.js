@@ -11,23 +11,22 @@ class MPromise {
   resolvedCb() { }
   rejectedCb() { }
 
+  thenRs() { }
+  thenRj() { }
+
   _resolve(res) {
     this._status = STATUS.RESOLVED;
-    this.changeResult = res;
+    this.thenedResult = this.resolvedCb(res);
   }
 
   _reject(err) {
     this._status = STATUS.REJECTED;
-    this.changeResult = err;
+    this.rejectedCb(err);
   }
 
-  set changeResult(value) {
-    console.log('#result setter', value);
-    this.#result = value;
-    if (this._status === STATUS.RESOLVED) {
-      return this.resolvedCb(value)
-    }
-    return this.rejectedCb(value)
+  set thenedResult(value) {
+    console.log('#thenedResult setter', value);
+    this.thenRs(value)
   }
 
   constructor(fn) {
@@ -40,7 +39,10 @@ class MPromise {
     if (typeof rejectedCb === 'function') {
       this.rejectedCb = rejectedCb;
     }
-    return this;
+    return new MPromise((resolve, reject) => {
+      this.thenRs = resolve;
+      this.thenRj = reject
+    });
   }
 
   catch(rejectedCb) {
