@@ -23,7 +23,7 @@ class MPromise {
 
   set changeResult(value) {
     console.log('#result setter', value);
-    this._result = value;
+    this.#result = value;
     if (this._status === STATUS.RESOLVED) {
       return this.resolvedCb(value)
     }
