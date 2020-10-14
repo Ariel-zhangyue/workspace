@@ -16,11 +16,13 @@ class MPromise {
 
   _resolve(res) {
     this.#status = STATUS.RESOLVED;
-    this.thenedResult = this.resolvedCb(res);
+    this.#result = res;
+    this.thenedResult = this.resolvedCb(this.#result);
   }
 
   _reject(err) {
     this.#status = STATUS.REJECTED;
+    this.#result = err;
     this.rejectedCb(err);
   }
 
@@ -34,10 +36,22 @@ class MPromise {
 
   then(resolvedCb, rejectedCb) {
     if (typeof resolvedCb !== 'function') { throw new Error('[Promise] first argument has to be a funciton! ') }
-    this.resolvedCb = resolvedCb;
-    if (typeof rejectedCb === 'function') {
-      this.rejectedCb = rejectedCb;
+
+    switch (this.#status) {
+      case STATUS.RESOLVED:
+        this.thenedResult = resolvedCb(this.#result)
+        break;
+      case STATUS.REJECTED:
+        rejectedCb(this.#result)
+        break;
+      default:
+        this.resolvedCb = resolvedCb;
+        if (typeof rejectedCb === 'function') {
+          this.rejectedCb = rejectedCb;
+        }
+        break;
     }
+
     return new MPromise((resolve, reject) => {
       this.thenRs = resolve;
       this.thenRj = reject
@@ -52,6 +66,8 @@ class MPromise {
 
 }
 
+var a = new MPromise((resolve, reject) => { resolve('haha') });
+a.then((v) => { console.log(v) })
 
 function timeout(ms) {
   return new MPromise((resolve, reject) => {
