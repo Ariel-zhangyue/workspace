@@ -117,18 +117,21 @@ class MPromise {
 
   static race(promises) {
     return new MPromise((resolve, reject) => {
-      let resolved = false;
+      let processed = false;
       promises.forEach((p, index) => {
         let pInstance = p;
         if (!(p instanceof MPromise)) { pInstance = Promise.resolve(p) }
         pInstance
           .then((v) => {
-            if (!resolved) {
-              resolved = true
+            if (!processed) {
+              processed = true
               resolve(v + index)
             }
           }).catch(err => {
-            reject(err);
+            if (!processed) {
+              processed = true
+              reject(err);
+            }
           })
       });
     });
